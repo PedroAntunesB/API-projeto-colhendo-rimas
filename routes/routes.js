@@ -1,13 +1,16 @@
 import express from "express";
 import cors from "cors";
 import { connectMongoFunction } from "../database/connectMongo.js";
-import { poesiaModel } from "../database/db.js";
+import { poesiaModel, dancaModel } from "../database/db.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(cors())
-app.use(express.static("public"));
+
+app.get('/', (req, res) => {
+  res.status(200).json({ message: "Bem vindo a api do site Colhendo Rimas" });
+})
 
 app.get("/poesia/:titulo", async (req, res) => {
   const tituloPoesia = req.params.titulo;
@@ -45,10 +48,28 @@ app.get('/:autor', async (req, res) => {
   res.status(200).json(dadosAutor);
 });
 
-app.post("/adicionar", async (req, res) => {
+app.post("/adicionarPoesia", async (req, res) => {
   await poesiaModel.create();
   res.status(200).json({ message: "Poesia adicionada com sucesso" });
 });
+
+app.post("/adicionarDanca", async (req, res) => {
+  await dancaModel.create();
+  res.status(200).json({ message: "Danca adicionada com sucesso" })
+});
+
+app.get('/dancas/listar', async (req, res) => {
+  const dados = await dancaModel.find({ nome: { $exists: true } });
+  const dancas = dados.map((i) => i.nome);
+  res.status(200).json(dancas);
+});
+
+app.get('/danca/:nome', async (req, res) => {
+  const nomeDanca = req.params.nome
+  const danca = await dancaModel.findOne({ nome: nomeDanca });
+  res.status(200).json(danca);
+
+})
 
 connectMongoFunction();
 app.listen(port, () => {

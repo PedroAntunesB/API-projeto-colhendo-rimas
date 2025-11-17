@@ -5,5 +5,12 @@ const poesiaSchema = new Schema({
   autor: { type: String, required: true },
 });
 
+const dancaSchema = new Schema({
+  nome: { type: String, required: true },
+  origem: { type: String, required: true },
+  informacao: { type: String, required: true },
+})
+
 const poesiaModel = model("Poesia", poesiaSchema);
-export { poesiaModel };
+const dancaModel = model("Danca", dancaSchema);
+export { poesiaModel, dancaModel };
